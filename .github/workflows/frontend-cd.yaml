@@ -87,6 +87,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Prepare frontend base image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker pull "$REGISTRY/frontend:node-18.14.2-alpine3.17"
+          docker tag "$REGISTRY/frontend:node-18.14.2-alpine3.17" \
+            public.ecr.aws/docker/library/node:18.14.2-alpine3.17
+
       - name: Build frontend Docker image
         working-directory: starter/frontend
         env:
