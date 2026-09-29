@@ -89,14 +89,19 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Login to Amazon ECR Public
+        run: |
+          aws ecr-public get-login-password --region us-east-1 |
+            docker login --username AWS --password-stdin public.ecr.aws
+
       - name: Pull backend base image
         run: |
           for i in 1 2 3 4 5; do
             if docker pull public.ecr.aws/docker/library/python:3.10-alpine3.18; then
               exit 0
             fi
-            echo "Base image pull failed. Retrying in 15 seconds..."
-            sleep 15
+            echo "Base image pull failed. Retrying in 30 seconds..."
+            sleep 30
           done
 
           echo "Unable to pull backend base image after 5 attempts."
@@ -190,4 +195,4 @@ jobs:
       - name: Verify backend service
         run: |
           kubectl get deployment backend
-          kubectl get service backend
+          kubectl get service backends
