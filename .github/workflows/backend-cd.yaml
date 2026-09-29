@@ -89,6 +89,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+            - name: Pull backend base image
+        run: |
+          for i in 1 2 3 4 5; do
+            docker pull public.ecr.aws/docker/library/python:3.10-alpine3.18 && break
+            echo "Base image pull failed. Retrying in 15 seconds..."
+            sleep 15
+          done
+
       - name: Build Docker image
         working-directory: starter/backend
         env:
